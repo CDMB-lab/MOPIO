@@ -27,8 +27,8 @@ p_and_g = {0: (50, 50), 1: (50, 100), 2: (100, 100), 3: (100, 150), 4: (150, 150
 # file_path = "gml/"
 def pio_run():
     save_path = "real_data/pio/"
-    n = 10  # 运行次数
-    data_type = 0  # 0: 真实数据 gml/  1: 人工数据 LFR_200/
+    n = 10
+    data_type = 0  # 0, 1
     for data_index in range(3, 4):
         # data_index = 0
         data_path = "gml/" + data_dict[data_type][data_index] + ".gml"

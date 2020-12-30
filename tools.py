@@ -67,7 +67,7 @@ def save_result(path, nmi_max, nmi_avg, nmi_std, q_max, q_avg, q_std, ari_max, a
                                               nmi_values_arr, q_values_arr, ari_values_arr))
 
 
-#  label数组.txt文件生成label的.classes文件
+#  label
 def generate_pairs_classes(txt_path: str):
     txt_arr = np.loadtxt(txt_path)
     np_arr = np.zeros(txt_arr.shape, dtype=int)
@@ -122,7 +122,6 @@ def txt2community(path):
     return comm
 
 
-#  邻接矩阵.txt文件生成边集.txt文件
 def generate_pairs(txt_path: str):
     txt_arr = np.loadtxt(txt_path)
     np_arr = np.zeros(txt_arr.shape, dtype=int)
@@ -190,7 +189,6 @@ def read_result(path="real_data/RealResult/"):
     return data_dict
 
 
-# 读取真实数据结果，计算Precision Recall F-measure    # "real_data/pio/"
 # "D:/MatlabCode/MOPSO-NET/real_world/"
 # "D:/MatlabCode/FN/real_world/"
 # "real_data/pio/"
@@ -208,7 +206,7 @@ def cal_p_r_f(path="real_data/pio/", file_name="LABEL-moga-moga-football-moga.tx
     print(data_name)
     true_arr = data_dict[data_name]
 
-    average_mode = "macro"  # 计算模式 micro macro
+    average_mode = "macro"  # micro, macro
 
     for each_arr in pre_arr:
         precision_list.append(metrics.precision_score(true_arr, each_arr, average=average_mode))

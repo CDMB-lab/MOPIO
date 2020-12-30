@@ -11,7 +11,7 @@ from NMI import nmi
 
 
 def get_x_center_index(label: np.ndarray) -> int:
-    nra_values = [abs(nra(x)) for x in label]  # 正值
+    nra_values = [abs(nra(x)) for x in label]
     nra_sum = sum(nra_values)
     t = random.random() * nra_sum
     for key, value in enumerate(nra_values):
@@ -40,7 +40,7 @@ def sorted_by_crowding_distance(function_values: list, index: list):
         _max = f_values_sorted[-1][1] - f_values_sorted[0][1]
         if _max == 0:
             # print("_max: {}, num: {}".format(_max, num))
-            _max = f_values_sorted[-1][1]  # 防止分母为零
+            _max = f_values_sorted[-1][1]
         _list = [(f_values_sorted[x+1][1] - f_values_sorted[x-1][1])/_max for x in range(1, num-1)]
         _list.insert(0, inf)
         _list.append(inf)
@@ -50,7 +50,7 @@ def sorted_by_crowding_distance(function_values: list, index: list):
             distance[f_values_sorted[i][0]] += _list[i]
 
     d_values = [(x, distance[x]) for x in range(num)]
-    d_values_sorted = sorted(d_values, key=lambda x: x[1], reverse=True)  # 按距离递减排序
+    d_values_sorted = sorted(d_values, key=lambda x: x[1], reverse=True) 
     # print(len(d_values_sorted))
     # print(d_values_sorted)
     # print(d_values_sorted)
@@ -75,7 +75,7 @@ def pio_main(population_size: int, iteration_num: int, data_path: str):
     global archive_function_value
     global best_pigeons
     global best_pigeons_div
-    global archive_div  # 存储全局最优解
+    global archive_div
     global archive_array
     global graph, real_label, graph_array, neighbors_list, path
 
@@ -93,10 +93,9 @@ def pio_main(population_size: int, iteration_num: int, data_path: str):
     leader = np.zeros(1, dtype=int)
 
     population_num = population_size
-    pigeons = get_main_variable(population_size, data_path)  # 初始化种群，初始化个体最优变量
+    pigeons = get_main_variable(population_size, data_path)
     best_pigeons = pigeons
 
-    # 初始化全局最优
     p_div = get_division_scheme(pigeons)
     best_pigeons_div = p_div
     pigeons_function_value = [get_nra_and_rc_value(x) for x in p_div]
@@ -115,8 +114,8 @@ def pio_main(population_size: int, iteration_num: int, data_path: str):
         s1 = time.time()
         for each in range(population_size):
 
-            sample_num = round(shape[1] * 0.8)  # 遗传率
-            rand_seq = random.sample(range(shape[1]), sample_num)  # 继承序列
+            sample_num = round(shape[1] * 0.8)
+            rand_seq = random.sample(range(shape[1]), sample_num)
             best_pigeons_weight = 1 - math.log(nc + 1, iteration_num)
             if best_pigeons_weight < 0.2:
                 best_pigeons_weight = 0.2
@@ -125,9 +124,9 @@ def pio_main(population_size: int, iteration_num: int, data_path: str):
             best_pigeons_seq = random.sample(rand_seq, best_pigeons_num)
             global_best_seq = [x for x in rand_seq if x not in best_pigeons_seq]
             # tmp_pigeons = pigeons[each]  # 0: pigeons 1: best_pigeons
-            # global_best = random.choice(archive_div)  # 重新选择global best
+            # global_best = random.choice(archive_div)  #global best
 
-            global_best = get_archive_index(archive_div)  # 全局最优解索引 archive_array[0]
+            global_best = get_archive_index(archive_div)  #archive_array[0]
             g_pigeons = archive_div[global_best]
 
             kids[each][best_pigeons_seq] = [x for x in best_pigeons[each][best_pigeons_seq]]
@@ -135,32 +134,29 @@ def pio_main(population_size: int, iteration_num: int, data_path: str):
             kids[each][global_best_seq] = get_seq(g_pigeons, global_best_seq)
 
             mutation_num = round(shape[1] * P)
-            mutation_seq = random.sample(range(shape[1]), mutation_num)  # 在整个序列突变
+            mutation_seq = random.sample(range(shape[1]), mutation_num)
             # pigeons[each][mutation_seq] = [random.choice(neighbors_list[x]) for x in mutation_seq]
             kids[each][mutation_seq] = [choose_by_cc(neighbors_list[x]) for x in mutation_seq]
 
             # tmp_pigeon = pigeons[each]
             # tmp_pigeon.shape = (1, shape[1])
             # pigeons_function_value[each] = get_nra_and_rc_value(get_division_scheme(tmp_pigeon)[0])
-            # best_pigeons[each] = pigeons[each] if check(pigeons_function_value, best_pigeons_function_value, each, each) != -1 else best_pigeons[each]  # 子代不是差的就接受
+            # best_pigeons[each] = pigeons[each] if check(pigeons_function_value, best_pigeons_function_value, each, each) != -1 else best_pigeons[each]
 
         e1 = time.time()
-        print("子代生成时间: {}".format(e1-s1))
+        print("Offspring generation time: {}".format(e1-s1))
 
         s2 = time.time()
-        # 合并子代与亲代，分层
         pigeons = np.vstack((pigeons, kids))
         p_div = get_division_scheme(pigeons)
         pigeons_function_value = [get_nra_and_rc_value(x) for x in p_div]
         _dict = ranked(pigeons_function_value)
 
-        # f1装载进archive
         for index in _dict[1]:
             archive_div = np.row_stack((archive_div, p_div[index]))
             archive_array = np.row_stack((archive_array, pigeons[index]))
             archive_num += 1
 
-        # 对archive非支配分层，保留archive.f1,即archive = archive.f1
         archive_div = np.unique(archive_div, axis=0)
         archive_function_value = [get_nra_and_rc_value(x) for x in archive_div]
         archive_num = len(archive_div)
@@ -177,10 +173,9 @@ def pio_main(population_size: int, iteration_num: int, data_path: str):
         archive_div = tmp_div[1:]
         archive_num = len(archive_div)
         e2 = time.time()
-        print("子代与亲代分层, Archive分层时间: {} , 分层保留: {}, Archive: {}".format(e2-s2, len(_dict[1]), archive_num))
+        print("Archive time: {} , reserve: {}, Archive: {}".format(e2-s2, len(_dict[1]), archive_num))
 
         s3 = time.time()
-        # 保留前N个体
         # total_num = 2 * population_size
         level_num = len(_dict)
         # print(_dict)
@@ -202,7 +197,6 @@ def pio_main(population_size: int, iteration_num: int, data_path: str):
             level_num -= 1
         # print("_dict: {}".format(len(remained_seq)))
 
-        # 更新个体最优
         pigeons = pigeons[remained_seq]
         # best_pigeons = pigeons
         p_div = get_division_scheme(pigeons)
@@ -211,13 +205,13 @@ def pio_main(population_size: int, iteration_num: int, data_path: str):
             best_pigeons[i] = pigeons[i] if check(pigeons_function_value, best_pigeons_function_value, i, i) != -1 else best_pigeons[i]
         # print("pass!")
         e3 = time.time()
-        print("保留N, 更新个体最优时间: {}, 当前迭代次数: {}".format(e3-s3, nc+1))
+        print("Update individual optimal time: {}, current iteration: {}".format(e3-s3, nc+1))
         # print("iteration_num: {0}".format(nc + 1, population_size))
         if nc + 1 == iteration_num:
             archive_function_value = [get_nra_and_rc_value(x) for x in archive_div]
             leader[0] = get_leader()  # get an index of leader from archive
             save_result(pigeons, p_div, archive_div, population_size, iteration_num, leader[0])
-            print("循环结束")
+            print("loop over")
         # print("Nc({}) after updating, pigeons: ".format(nc))
         # print(pigeons)
         # print("Nc({})after updating, velocities: ".format(nc))
@@ -228,7 +222,7 @@ def pio_main(population_size: int, iteration_num: int, data_path: str):
     # print("velocities: ")
     # print(velocities)
     e = time.time()
-    print("方法总时长: {}".format(e-s))
+    print("total time: {}".format(e-s))
     return pigeons, p_div, archive_div, leader[0]
 
 
@@ -421,15 +415,13 @@ def get_leader() -> int:
     del rank_score_list[len(result_list):]
     print("rank_score_list: {}".format(rank_score_list))
 
-    # 把 rank_score_list 绑定索引存入列表
     rs_list = []
     for i in range(len(result_list)):
         rs_list.append((i, rank_score_list[i]))
     rs_sorted = sorted(rs_list, key=lambda x: x[1], reverse=False)
     print("rs_sorted: {}".format(rs_sorted))
 
-    ans = [rs_sorted[0][0]]  # 把rs_sorted第一个个体值存入
-    # 选top个体，差值不超过d_value
+    ans = [rs_sorted[0][0]]
     for i in range(1, len(result_list)):
         print("{} - {}".format(result_list[rs_sorted[i][0]][1], result_list[rs_sorted[i-1][0]][1]))
         if abs(result_list[rs_sorted[i][0]][1] - result_list[rs_sorted[i-1][0]][1]) < dist_d_value:
@@ -488,12 +480,12 @@ def create_graph_dict(parent, v_count):
 def get_division_scheme(population: np.ndarray):
     # parent_label = list()
     # visited = set()
-    labels = np.zeros(population.shape, dtype=int)  # 存储个体解方案的分区情况
+    labels = np.zeros(population.shape, dtype=int)
     parent_dict_list = create_graph_dict(population, population.shape[1])
     for i in range(len(population)):
-        visited = set()  # 遍历每个连通分量时的临时visited数组
-        v = set()  # 个体i本次遍历的全局visited数组
-        c_num = 1  # 1号分区
+        visited = set()
+        v = set()
+        c_num = 1
         for j in range(population.shape[1]):
             if j not in visited and j not in v:
                 visited = set()
@@ -619,7 +611,7 @@ def check(function_value1, function_value2, i, j):
 def ranking(function_value, seq):
     num = len(function_value)
     dominated_index = np.zeros(num, dtype=int)
-    dominated_num = np.zeros(num, dtype=int)  # 个体被支配解的数量
+    dominated_num = np.zeros(num, dtype=int)
     dominating_seq = []
     # _seq = list(range(len(seq)))
     for i in seq:
@@ -641,11 +633,11 @@ def ranking(function_value, seq):
 
 def assign_rank(label: int):
     num = population_num if label == 0 else archive_num
-    rank = np.zeros(num, dtype=int)  # 个体排名
-    floor_index_dict = {}  # 分层集合
-    dominating_dict = {}  # 支配解的集合
+    rank = np.zeros(num, dtype=int)
+    floor_index_dict = {}
+    dominating_dict = {}
     dominated_index = np.zeros(num, dtype=int)
-    dominated_num = np.zeros(num, dtype=int)  # 个体被支配解的数量
+    dominated_num = np.zeros(num, dtype=int)
     for p_index in range(num):
         if dominated_index[p_index] == 1:
             continue
@@ -692,7 +684,7 @@ def assign_rank(label: int):
 
 
 def assign_crowding_distance(floor_dict: dict, index_in_floor: int, population: np.ndarray, labels: np.ndarray):
-    solutions_in_floor = floor_dict[index_in_floor]  # tmp_floor为引用变量
+    solutions_in_floor = floor_dict[index_in_floor]  # tmp_floor
     num = len(solutions_in_floor)
     solutions_distance = np.zeros((2, num))
     avg_distance = np.zeros(num)
@@ -714,7 +706,7 @@ def assign_crowding_distance(floor_dict: dict, index_in_floor: int, population: 
                 (sorted_values_list[j + 1] - sorted_values_list[j + 1]) / (
                         sorted_values_list[num - 1] - sorted_values_list[0])
 
-    # solutions_distance求平均
+    # solutions_distance
     # print("solution_indices: " + str(solution_indices))
     # print("solutions_distance: " + str(solutions_distance))
     for i in range(num):

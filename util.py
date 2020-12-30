@@ -10,7 +10,6 @@ from sklearn import metrics
 import meme_main
 
 
-#  label数组.txt文件生成label的.classes文件
 def generate_pairs_classes(txt_path: str):
     txt_arr = np.loadtxt(txt_path)
     np_arr = np.zeros(txt_arr.shape, dtype=int)
@@ -21,7 +20,6 @@ def generate_pairs_classes(txt_path: str):
             f1.write("{}\t{}\n".format(i+1, np_arr[i]))
 
 
-#  邻接矩阵.txt文件生成边集.pairs文件
 def generate_pairs(txt_path: str):
     txt_arr = np.loadtxt(txt_path)
     np_arr = np.zeros(txt_arr.shape, dtype=int)
@@ -35,7 +33,6 @@ def generate_pairs(txt_path: str):
                     f1.write("{}\t{}\n".format(i+1, j+1))
 
 
-#  邻接矩阵.txt文件生成.gml文件
 def txt2gml(txt_path: str):
     txt_arr = np.loadtxt(txt_path)
     np_arr = np.zeros(txt_arr.shape, dtype=int)
@@ -73,7 +70,7 @@ def txt2np_1v(txt_path: str):
 
 def generate_gml_file(edges, filename):  # edges: [(0, 1), (0, 2), (1, 2), ...]
     """
-    生成gml文件
+    generate gml file
     """
     vertex = np.unique(edges)
     fp_out = open(filename, 'w')
@@ -135,8 +132,8 @@ p_and_g = {0: (50, 50), 1: (50, 100), 2: (100, 100), 3: (100, 150), 4: (150, 150
 # file_path = "gml/"
 def pio_run():
     save_path = "real_data/pio/"
-    n = 10  # 运行次数
-    data_type = 0  # 0: 真实数据 gml/  1: 人工数据 LFR_200/
+    n = 10
+    data_type = 0
     for data_index in range(3, 4):
         # data_index = 0
         data_path = "gml/" + data_dict[data_type][data_index] + ".gml"
@@ -192,7 +189,7 @@ def pio_run():
 # data_dict = {0: "karate", 1: "football", 2: "fb50", 3: "polbooks", 4: "dolphins"}
 def meme_run():
     save_path = "real_data/meme/"
-    n = 20  # 运行次数
+    n = 20
     data_type = 0
     for data_index in range(1, 2):
         # data_index = 1
